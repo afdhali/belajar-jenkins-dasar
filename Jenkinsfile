@@ -18,18 +18,6 @@ pipeline {
             }
         }
         
-        stage('Setup Network') {
-            steps {
-                script {
-                    try {
-                        sh 'docker network create jenkins || true'
-                    } catch (error) {
-                        echo 'Network might already exist, continuing...'
-                    }
-                }
-            }
-        }
-        
         stage('Build Docker Image') {
             steps {
                 script {
@@ -48,7 +36,14 @@ pipeline {
                         echo 'Container tidak ada, lanjut membuat baru'
                     }
                     
-                    sh "docker run -d --name express-hello --network jenkins -p 5000:5000 express-hello:${env.BUILD_ID}"
+                    // Gunakan network yang sudah ada
+                    sh """
+                        docker network inspect jenkins >/dev/null 2>&1 || docker network create jenkins
+                        docker run -d --name express-hello \
+                            --network jenkins \
+                            -p 5000:5000 \
+                            express-hello:${env.BUILD_ID}
+                    """
                 }
             }
         }
