@@ -37,7 +37,7 @@ pipeline {
                     }
                     
                     // Gunakan network jenkins yang sudah ada
-                    sh "docker run -d --name express-hello --network jenkins -p 5000:5000 express-hello:${env.BUILD_ID}"
+                    sh "docker run -d --name express-hello --network jenkins -p 49000:49000 express-hello:${env.BUILD_ID}"
                 }
             }
         }
