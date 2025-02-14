@@ -18,6 +18,18 @@ pipeline {
             }
         }
         
+        stage('Setup Network') {
+            steps {
+                script {
+                    try {
+                        sh 'docker network create jenkins || true'
+                    } catch (error) {
+                        echo 'Network might already exist, continuing...'
+                    }
+                }
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 script {
