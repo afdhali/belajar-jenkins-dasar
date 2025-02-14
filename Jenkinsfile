@@ -29,14 +29,15 @@ pipeline {
         stage('Run Container') {
             steps {
                 script {
-                    // Stop dan remove container lama jika ada
-                    sh '''
-                        docker stop express-hello || true
-                        docker rm express-hello || true
-                    '''
+                    try {
+                        sh 'docker stop express-hello || true'
+                        sh 'docker rm express-hello || true'
+                    } catch (error) {
+                        echo 'Container tidak ada, lanjut membuat baru'
+                    }
                     
-                    // Jalankan container baru di network yang benar (6737f875143e)
-                    sh "docker run -d --name express-hello --network 6737f875143e133472d0dfcb537311aaf373cba691e58ff89400dbab7b7f2394 -p 5000:5000 express-hello:${env.BUILD_ID}"
+                    // Gunakan network jenkins yang sudah ada
+                    sh "docker run -d --name express-hello --network jenkins -p 5000:5000 express-hello:${env.BUILD_ID}"
                 }
             }
         }
